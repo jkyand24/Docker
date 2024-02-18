@@ -1,0 +1,25 @@
+services:
+  app: # Define the app service
+    image: node:18-alpine
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 127.0.0.1:3000:3000
+    working_dir: /app # /app을, command가 실행될 "현재 작업 디렉토리"로 설정
+    volumes: # mount "현재 디렉토리 (= command가 실행되는 location) (host 쪽)" to "/app (container 내부)" -----> host의 application 소스코드를 container에 제공
+      - ./:/app
+    environment:
+      MYSQL_HOST: mysql # hostname for the running MySQL server
+      MYSQL_USER: root # username to use for the connection
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  mysql: # Define the MySQL service 
+    image: mysql:8.0
+    volumes: # mount "todo-mysql-data" to "/var/lib/mysql"
+      - todo-mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+volumes:
+  todo-mysql-data: # volume의 이름
